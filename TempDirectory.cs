@@ -1,6 +1,3 @@
-    using System;
-    using System.IO;
-
     public class TempDirectory : IDisposable
     {
         public string FilePath { get; set; }
@@ -17,11 +14,24 @@
             this.DelteOnDispose = deleteOnDispose;
         }
 
+        ~TempDirectory()
+        {
+            this.Dispose(false);
+        }
         public void Dispose()
         {
-            if (this.DelteOnDispose)
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                Directory.Delete(this.FilePath, true);
+                if (this.DelteOnDispose)
+                {
+                    Directory.Delete(this.FilePath, true);
+                }
             }
         }
 
